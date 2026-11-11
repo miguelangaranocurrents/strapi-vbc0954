@@ -797,7 +797,10 @@ const RelationModalWithContext = ({
           }
           hasMoreItems={hasNextPage}
           loading={isLoadingSearchRelations || isLoadingPermissions}
-          onOpenChange={() => {
+          onOpenChange={(isOpen?: boolean) => {
+            if (isOpen === false) {
+              return;
+            }
             handleSearch(textValue ?? '');
           }}
           noOptionsMessage={() =>
@@ -812,7 +815,20 @@ const RelationModalWithContext = ({
           })}
           onLoadMore={handleLoadMore}
           textValue={textValue}
-          onChange={handleChange}
+          /**
+           * The combobox only adds relations, it never holds a selection: keeping the picked
+           * option as its value would restore that option's label as the search text when the
+           * list is reopened, hiding the remaining entries.
+           */
+          value={null}
+          onChange={(relationId?: string) => {
+            if (!relationId) {
+              return;
+            }
+            handleChange(relationId);
+            setTextValue('');
+            handleSearch('');
+          }}
           onTextValueChange={(text) => {
             setTextValue(text);
           }}
